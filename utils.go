@@ -46,29 +46,16 @@ func (configor *Configor) getConfigurationFiles(files ...string) []string {
 	var results []string
 
 	for i := len(files) - 1; i >= 0; i-- {
-		foundFile := false
 		file := files[i]
 
 		// check configuration
 		if fileInfo, err := os.Stat(file); err == nil && fileInfo.Mode().IsRegular() {
-			foundFile = true
 			results = append(results, file)
 		}
 
 		// check configuration with env
 		if file, err := getConfigurationFileWithENVPrefix(file, configor.GetEnvironment()); err == nil {
-			foundFile = true
 			results = append(results, file)
-		}
-
-		// check example configuration
-		if !foundFile {
-			if example, err := getConfigurationFileWithENVPrefix(file, "example"); err == nil {
-				fmt.Printf("Failed to find configuration %v, using example file %v\n", file, example)
-				results = append(results, example)
-			} else {
-				fmt.Printf("Failed to find configuration %v\n", file)
-			}
 		}
 	}
 	return results

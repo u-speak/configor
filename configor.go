@@ -1,6 +1,7 @@
 package configor
 
 import (
+	"errors"
 	"os"
 	"regexp"
 )
@@ -40,7 +41,11 @@ func (configor *Configor) GetEnvironment() string {
 
 // Load will unmarshal configurations to struct from files that you provide
 func (configor *Configor) Load(config interface{}, files ...string) error {
-	for _, file := range configor.getConfigurationFiles(files...) {
+	cfiles := configor.getConfigurationFiles(files...)
+	if len(cfiles) == 0 {
+		return errors.New("Could not find any configuration files")
+	}
+	for _, file := range cfiles {
 		if err := processFile(config, file); err != nil {
 			return err
 		}
